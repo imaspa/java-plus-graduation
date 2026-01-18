@@ -1,32 +1,25 @@
-server:
-  port: 9090
-
 spring:
   application:
     name: stats-server
+  config:
+    import: "configserver:"
 
-  mvc:
-    format:
-      date: yyyy-MM-dd
-      date-time: yyyy-MM-dd HH:mm:ss
-      time: HH:mm:ss
-  jackson:
-    date-format: yyyy-MM-dd HH:mm:ss
-    time-zone: Europe/Moscow
-    locale: ru_RU
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        serviceId: config-server
+      fail-fast: true
+      retry:
+        max-attempts: 10
+        initial-interval: 1000
+        useRandomPolicy: true
 
-  sql:
-    init:
-      mode: always
-      schema-locations: classpath:schema.sql
-
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
-  jpa:
-    hibernate:
-      ddl-auto: none
-    properties:
-      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka/}
+  instance:
+#    preferIpAddress: true
+    instance-id: "${spring.application.name}:${random.value}"
+    leaseRenewalIntervalInSeconds: 10

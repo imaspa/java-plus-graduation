@@ -1,6 +1,5 @@
 spring:
   application:
     name: stats-client
-
 stats-server:
   url: http://stats-server:9090
