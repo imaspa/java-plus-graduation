@@ -16,7 +16,7 @@ public class RestClientConfig {
     private final DiscoveryClient discoveryClient;
     private final RetryTemplate retryTemplate;
 
-    @Value("${stats-server.id:stats-server}")
+    @Value("${stats-server.id}")
     private String statsServiceId;
 
     @Value("${stats-server.url:http://stats-server:9090}")

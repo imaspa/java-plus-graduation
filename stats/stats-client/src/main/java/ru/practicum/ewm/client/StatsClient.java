@@ -35,7 +35,8 @@ public class StatsClient {
     }
 
     public List<ViewStatsDto> getStats(String start, String end, String[] uris, boolean unique) {
-        String url = UriComponentsBuilder
+        String baseUrl = restClientConfig.getStatsServerUrl();
+        String url = baseUrl + UriComponentsBuilder
                 .fromPath("/stats")
                 .queryParam("start", start)
                 .queryParam("end", end)

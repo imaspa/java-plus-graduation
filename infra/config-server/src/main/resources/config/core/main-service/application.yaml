@@ -1,6 +1,10 @@
 server:
   port: 0
 
+stats-server:
+  id: stats-server
+  url: http://stats-server:9090
+
 spring:
   mvc:
     format:
