@@ -26,7 +26,7 @@ public class StatsClient {
         log.info("Отправка запроса saveHit: url={}, body={}", url, hitDto);
 
         restClient.post()
-                .uri("/hit")
+                .uri(url)
                 .body(hitDto)
                 .retrieve()
                 .toBodilessEntity();
