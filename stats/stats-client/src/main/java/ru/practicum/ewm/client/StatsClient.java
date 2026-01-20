@@ -1,18 +1,59 @@
 package ru.practicum.ewm.client;
 
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.util.UriComponentsBuilder;
 import ru.practicum.ewm.EndpointHitDto;
 import ru.practicum.ewm.ViewStatsDto;
 
+import java.util.Arrays;
 import java.util.List;
 
-@FeignClient(name = "stats-server")
-public interface StatsClient {
-    @PostMapping("/hit")
-    void saveHit(EndpointHitDto hitDto);
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class StatsClient {
 
-    @GetMapping("/stats")
-    List<ViewStatsDto> getStats(String start, String end, String[] uris, Boolean unique);
+    private final RestClient restClient;
+
+    public void saveHit(EndpointHitDto hitDto) {
+        String url = "/hit";
+        log.info("Отправка запроса saveHit: url={}, body={}", url, hitDto);
+
+        restClient.post()
+                .uri("/hit")
+                .body(hitDto)
+                .retrieve()
+                .toBodilessEntity();
+
+        log.info("Hit был сохранен");
+    }
+
+    public List<ViewStatsDto> getStats(String start, String end, String[] uris, boolean unique) {
+        String url = UriComponentsBuilder
+                .fromPath("/stats")
+                .queryParam("start", start)
+                .queryParam("end", end)
+                .queryParam("uris", (Object[]) uris)
+                .queryParam("unique", unique)
+                .build(false)
+                .toUriString();
+
+        String logUrl = url.replace(" ", "%20");
+        log.info("Отправка запроса getStats: url={}", logUrl);
+
+        List<ViewStatsDto> stats = Arrays.asList(
+                restClient.get()
+                        .uri(url)
+                        .retrieve()
+                        .body(ViewStatsDto[].class)
+        );
+
+        log.info("getStats вернул {} записей", stats.size());
+        return stats;
+    }
+
+
 }

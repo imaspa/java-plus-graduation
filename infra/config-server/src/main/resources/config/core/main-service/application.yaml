@@ -1,9 +1,6 @@
 server:
   port: 0
 
-stats-server:
-  url: http://localhost:9090
-
 spring:
   mvc:
     format:
@@ -30,5 +27,3 @@ spring:
       ddl-auto: none
     properties:
       hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
-
-
