@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: gateway-server
+  config:
+    import: "configserver:"
+
+  cloud:
+    config:
+      discovery:
+        enabled: true #  клиент должен использовать службу обнаружения (Eureka) для поиска сервера конфигурации
+        serviceId: config-server # под каким именем зарегистрирован сервер конфигурации в Eureka. Именно по этому имени Spring Cloud найдёт нужный сервис и получит от него настройки.
+      fail-fast: true # падаем если сервер конфигураций недоступен
+      retry: # попытки восстановится перед тем как признать умершим
+        max-attempts: 10
+        initial-interval: 1000
+        useRandomPolicy: true
+
+eureka:
+  client:
+    #registerWithEureka: false #если не предоставляем никаих сервисов, то незачем и регаться в эврики. Как клиент работать будет
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka/}
+
+  instance:
+    # настройки позволяют управлять адресом, по которому сервис будет доступен сервису-реестру и другим клиентам
+#    preferIpAddress: true # Заставляет Eureka регистрировать IP-адрес вместо хостнейма
+    #hostname: localhost # Явно задаёт хостнейм, который будет использоваться при регистрации в Eurek
+
+    instance-id: "${spring.application.name}:${random.value}"
+    leaseRenewalIntervalInSeconds: 10 # как часто клиент будет отправлять "пульс" (heartbeat) в Eureka. В секундах

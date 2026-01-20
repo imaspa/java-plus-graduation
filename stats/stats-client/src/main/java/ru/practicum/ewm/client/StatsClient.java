@@ -2,12 +2,12 @@ package ru.practicum.ewm.client;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.practicum.ewm.EndpointHitDto;
 import ru.practicum.ewm.ViewStatsDto;
+import ru.practicum.ewm.config.RestClientConfig;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,16 +18,15 @@ import java.util.List;
 public class StatsClient {
 
     private final RestClient restClient;
-
-    @Value("${stats-server.url}")
-    private String statsServerUrl;
+    private final RestClientConfig restClientConfig;
 
     public void saveHit(EndpointHitDto hitDto) {
-        String url = statsServerUrl + "/hit";
+        String baseUrl = restClientConfig.getStatsServerUrl();
+        String url = baseUrl + "/hit";
         log.info("Отправка запроса saveHit: url={}, body={}", url, hitDto);
 
         restClient.post()
-                .uri("/hit")
+                .uri(url)
                 .body(hitDto)
                 .retrieve()
                 .toBodilessEntity();
@@ -36,7 +35,8 @@ public class StatsClient {
     }
 
     public List<ViewStatsDto> getStats(String start, String end, String[] uris, boolean unique) {
-        String url = UriComponentsBuilder
+        String baseUrl = restClientConfig.getStatsServerUrl();
+        String url = baseUrl + UriComponentsBuilder
                 .fromPath("/stats")
                 .queryParam("start", start)
                 .queryParam("end", end)
@@ -46,7 +46,7 @@ public class StatsClient {
                 .toUriString();
 
         String logUrl = url.replace(" ", "%20");
-        log.info("Отправка запроса getStats: url={}", statsServerUrl + logUrl);
+        log.info("Отправка запроса getStats: url={}", logUrl);
 
         List<ViewStatsDto> stats = Arrays.asList(
                 restClient.get()
@@ -58,4 +58,6 @@ public class StatsClient {
         log.info("getStats вернул {} записей", stats.size());
         return stats;
     }
+
+
 }

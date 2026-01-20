@@ -1,13 +1,15 @@
-package ru.practicum.ewm;
+package ru.practicum.gatewayserver;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-public class StatsServiceApp {
+@ConfigurationPropertiesScan
+public class GatewayServerApp {
     public static void main(String[] args) {
-        SpringApplication.run(StatsServiceApp.class, args);
+        SpringApplication.run(GatewayServerApp.class, args);
     }
 }
