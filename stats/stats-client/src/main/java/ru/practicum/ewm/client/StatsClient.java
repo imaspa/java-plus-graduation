@@ -7,6 +7,7 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.practicum.ewm.EndpointHitDto;
 import ru.practicum.ewm.ViewStatsDto;
+import ru.practicum.ewm.config.RestClientConfig;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,9 +18,11 @@ import java.util.List;
 public class StatsClient {
 
     private final RestClient restClient;
+    private final RestClientConfig restClientConfig;
 
     public void saveHit(EndpointHitDto hitDto) {
-        String url = "/hit";
+        String baseUrl = restClientConfig.getStatsServerUrl();
+        String url = baseUrl + "/hit";
         log.info("Отправка запроса saveHit: url={}, body={}", url, hitDto);
 
         restClient.post()

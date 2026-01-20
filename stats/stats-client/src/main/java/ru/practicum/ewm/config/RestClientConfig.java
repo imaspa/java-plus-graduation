@@ -12,28 +12,34 @@ import org.springframework.web.client.RestClient;
 @Configuration
 @RequiredArgsConstructor
 public class RestClientConfig {
+
     private final DiscoveryClient discoveryClient;
     private final RetryTemplate retryTemplate;
 
     @Value("${stats-server.id:stats-server}")
     private String statsServiceId;
 
+    @Value("${stats-server.url:http://stats-server:9090}")
+    private String fallbackUrl;
 
     @Bean
-    public RestClient restClient(RestClient.Builder builder) {
-        return builder
-                .baseUrl(getBaseUrl())
-                .build();
+    public RestClient statsRestClient(RestClient.Builder builder) {
+        return builder.build();
     }
 
-    public String getBaseUrl() {
-        ServiceInstance instance = retryTemplate.execute(ctx -> getInstance());
-        return instance.getUri().toString();
+    public String getStatsServerUrl() {
+        try {
+            ServiceInstance instance = retryTemplate.execute(ctx -> getInstance());
+            return instance.getUri().toString();
+        } catch (Exception e) {
+            return fallbackUrl;
+        }
     }
 
-    public ServiceInstance getInstance() {
+    private ServiceInstance getInstance() {
         return discoveryClient.getInstances(statsServiceId)
-                .stream().findAny()
+                .stream()
+                .findFirst()
                 .orElseThrow(() -> new IllegalStateException("%s service unavailable".formatted(statsServiceId)));
     }
 }
