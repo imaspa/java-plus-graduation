@@ -1,22 +1,90 @@
 services:
-
   stats-db:
     image: postgres:16.1
     container_name: stats-db
     ports:
       - "5433:5432"
     environment:
-      - POSTGRES_PASSWORD=100
-      - POSTGRES_USER=admin
-      - POSTGRES_DB=stats-db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 100
+      POSTGRES_DB: stats
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
 
-  main-db:
+  user-db:
     image: postgres:16.1
-    container_name: main-db
+    container_name: user-db
     ports:
-      - "5434:5432"
+      - "5435:5432"
     environment:
-      - POSTGRES_PASSWORD=100
-      - POSTGRES_USER=admin
-      - POSTGRES_DB=main-db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 100
+      POSTGRES_DB: user
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
 
+  request-db:
+    image: postgres:16.1
+    container_name: request-db
+    ports:
+      - "5436:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 100
+      POSTGRES_DB: request
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+
+  comment-db:
+    image: postgres:16.1
+    container_name: comment-db
+    ports:
+      - "5437:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 100
+      POSTGRES_DB: comment
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+
+  event-db:
+    image: postgres:16.1
+    container_name: event-db
+    ports:
+      - "5438:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 100
+      POSTGRES_DB: event
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10

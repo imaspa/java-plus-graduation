@@ -1,0 +1,9 @@
+stats-server:
+  id: stats-server
+  url: http://stats-server:9090
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5438/event
+    username: ${SPRING_DATASOURCE_USERNAME:admin}
+    password: ${SPRING_DATASOURCE_PASSWORD:100}

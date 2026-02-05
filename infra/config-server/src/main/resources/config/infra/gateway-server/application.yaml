@@ -4,9 +4,33 @@ server:
 spring:
   cloud:
     gateway:
-      discovery.locator.enabled: true # для своей работы должен использовать Discovery Service.
+      discovery.locator.enabled: false # для своей работы должен использовать Discovery Service.
       routes:
-        - id: main_service_route
-          uri: lb://main-service
+#        - id: main_service_route
+#          uri: lb://main-service
+#          predicates:
+#            - Path=/categories/**,/compilations/**,/events/**,/users/**,/comments/**,/admin/**
+        - id: request_service_route
+          uri: lb://request-service
           predicates:
-            - Path=/categories/**,/compilations/**,/events/**,/users/**,/comments/**,/admin/**
+            - Path=/users/{userId}/requests/**,/users/{userId}/events/{eventId}/requests/**
+
+        - id: event_service_route
+          uri: lb://event-service
+          predicates:
+            - Path=/users/{userId}/events/**,/categories/**,/compilations/**,/events/**
+
+        - id: comment_service_route
+          uri: lb://comment-service
+          predicates:
+            - Path=/comments/**,/admin/comments/**
+
+        - id: event_service_admin_route
+          uri: lb://event-service
+          predicates:
+            - Path=/admin/categories/**,/admin/compilations/**,/admin/events/**
+
+        - id: user_service_route
+          uri: lb://user-service
+          predicates:
+            - Path=/admin/users/**
