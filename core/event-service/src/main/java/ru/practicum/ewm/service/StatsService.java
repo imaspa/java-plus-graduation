@@ -28,12 +28,10 @@ public class StatsService {
         List<String> uris = List.of("/events/" + eventId);
         List<ViewStatsDto> stats = statsClient.getStats(start, end, uris.toArray(new String[0]), true);
         return stats.isEmpty() ? 0L : stats.getFirst().getHits();
-//        return 0L;
     }
 
 
     public Map<String, Long> getViewsForUris(List<String> uris) {
-//        return Map.of();
         if (uris == null || uris.isEmpty()) {
             return Map.of();
         }
@@ -46,7 +44,7 @@ public class StatsService {
                 .collect(Collectors.toMap(
                         ViewStatsDto::getUri,
                         ViewStatsDto::getHits,
-                        (existing, replacement) -> existing // на случай дублей
+                        (existing, replacement) -> existing
                 ));
     }
 

@@ -96,7 +96,7 @@ public class CommentService {
         Boolean isEventExists = FeignClientWrapper.callWithRequest(
                 () -> eventClient.isExists(eventId),
                 eventId,
-                "Мероприятие" //new NotFoundException("Мероприятие с id=" + eventId + " не найдено"));
+                "Мероприятие"
         );
 
         if (!isEventExists) {
@@ -118,26 +118,20 @@ public class CommentService {
     }
 
     private UserDto getUserOrThrow(Long userId) {
-//        return userClient.findById(userId)
-//                .orElseThrow(() -> new NotFoundException("Пользователь с id=" + userId + " не найден"));
         UserDto requester = FeignClientWrapper.callWithRequest(
                 () -> userClient.getUser(userId),
                 userId,
-                "Пользователь" //new NotFoundException("Пользователь с id=" + userId + " не найден"));
+                "Пользователь"
         );
-        //todo разобраться с пробросом ошибки (если не найден) и подправить фигн клиент
         return requester;
     }
 
     private EventFullDto getEventOrThrow(Long eventId) {
-//        return eventClient.findById(eventId)
-//                .orElseThrow(() -> new NotFoundException("Событие с id=" + eventId + " не найдено"));
         EventFullDto event = FeignClientWrapper.callWithRequest(
                 () -> eventClient.getEvent(eventId),
                 eventId,
-                "Мероприятие" //new NotFoundException("Мероприятие с id=" + eventId + " не найдено"));
+                "Мероприятие"
         );
-        //todo разобраться с пропросом ошибки
         return event;
     }
 }

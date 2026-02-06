@@ -47,13 +47,13 @@ public class RequestService {
         UserDto requester = FeignClientWrapper.callWithRequest(
                 () -> userClient.getUser(userId),
                 userId,
-                "Пользователь" //new NotFoundException("Пользователь с id=" + userId + " не найден"));
+                "Пользователь"
         );
 
         EventFullDto event = FeignClientWrapper.callWithRequest(
                 () -> eventClient.getEvent(eventId),
                 eventId,
-                "Мероприятие" //new NotFoundException("Мероприятие с id=" + eventId + " не найдено"));
+                "Мероприятие"
         );
 
 
@@ -84,9 +84,6 @@ public class RequestService {
         if (!moderation || event.getParticipantLimit() == 0) {
             request.setStatus(RequestStatus.CONFIRMED);
         }
-//        if (moderation != null && !moderation) {
-//            request.setStatus(RequestStatus.CONFIRMED);
-//        }
         request = repository.save(request);
         log.info("Создан запрос, id = {}", request.getId());
         return mapper.toDto(request);
@@ -98,7 +95,7 @@ public class RequestService {
         Boolean isUserExists = FeignClientWrapper.callWithRequest(
                 () -> userClient.isExists(userId),
                 userId,
-                "Пользователь" //NotFoundException("Пользователь с id=" + userId + " не найден");
+                "Пользователь"
         );
         if (!isUserExists) {
             throw new NotFoundException("Пользователь с id=" + userId + " не найден");
@@ -125,14 +122,11 @@ public class RequestService {
 
     @Transactional(readOnly = true)
     public List<ParticipationRequestDto> getRequestsForEventOwner(Long ownerId, Long eventId) throws ConditionsException {
-//        Event event = eventClient.findById(eventId)
-//                .orElseThrow(() -> new NotFoundException("Мероприятие с id=" + eventId + " не найдено"));
         EventFullDto event = FeignClientWrapper.callWithRequest(
                 () -> eventClient.getEvent(eventId),
                 eventId,
-                "Мероприятие" //new NotFoundException("Мероприятие с id=" + eventId + " не найдено"));
+                "Мероприятие"
         );
-
 
         if (!Objects.equals(event.getInitiator().getId(), ownerId)) {
             throw new ConditionsException("Только владелец мероприятия может просматривать запросы на это мероприятие");
@@ -152,7 +146,7 @@ public class RequestService {
         EventFullDto event = FeignClientWrapper.callWithRequest(
                 () -> eventClient.getEvent(eventId),
                 eventId,
-                "Мероприятие" //new NotFoundException("Мероприятие с id=" + eventId + " не найдено"));
+                "Мероприятие"
         );
 
         if (!Objects.equals(event.getInitiator().getId(), ownerId)) {

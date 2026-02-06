@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.ewm.service.CompilationService;
 import ru.practicum.ewm.interaction.core.dto.compilation.CompilationFullDto;
 import ru.practicum.ewm.interaction.core.dto.compilation.CompilationUpdateDto;
 import ru.practicum.ewm.interaction.core.exception.ConditionsException;
+import ru.practicum.ewm.service.CompilationService;
 
 @RestController
 @RequestMapping("/admin/compilations")

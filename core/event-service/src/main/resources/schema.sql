@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS events
     category_id       BIGINT REFERENCES categories (id) ON DELETE CASCADE,
     created           TIMESTAMP WITHOUT TIME ZONE         NOT NULL,
     description       VARCHAR(7000)                       NOT NULL,
-    initiator_id      BIGINT ,
+    initiator_id      BIGINT,
     event_date        TIMESTAMP WITHOUT TIME ZONE         NOT NULL,
     location_id       BIGINT REFERENCES locations (id) ON DELETE CASCADE,
     paid              BOOLEAN                             NOT NULL DEFAULT false,

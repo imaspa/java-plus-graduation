@@ -7,13 +7,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import ru.practicum.ewm.interaction.core.dto.category.CategoryDto;
+import ru.practicum.ewm.interaction.core.exception.ConflictException;
+import ru.practicum.ewm.interaction.core.exception.NotFoundException;
 import ru.practicum.ewm.mapper.CategoryMapper;
 import ru.practicum.ewm.model.Category;
 import ru.practicum.ewm.repository.CategoryRepository;
 import ru.practicum.ewm.repository.EventRepository;
-import ru.practicum.ewm.interaction.core.dto.category.CategoryDto;
-import ru.practicum.ewm.interaction.core.exception.ConflictException;
-import ru.practicum.ewm.interaction.core.exception.NotFoundException;
 
 import java.util.List;
 
@@ -54,8 +54,6 @@ public class CategoryService {
             throw new NotFoundException("Удаляемая запись не найдена");
         }
 
-//        Optional<Event> eventOpt = eventRepository.findFirstByCategoryId(catId);
-//        if (eventOpt.isPresent()) {
         if (eventRepository.existsByCategoryId(catId)) {
             throw new ConflictException("Категория с id = " + catId + " используется");
         }

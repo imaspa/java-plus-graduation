@@ -13,13 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import ru.practicum.ewm.filter.EventsFilter;
-import ru.practicum.ewm.mapper.EventMapper;
-import ru.practicum.ewm.mapper.EventMapperDep;
-import ru.practicum.ewm.model.Category;
-import ru.practicum.ewm.model.Event;
-import ru.practicum.ewm.model.Location;
-import ru.practicum.ewm.repository.CategoryRepository;
-import ru.practicum.ewm.repository.EventRepository;
 import ru.practicum.ewm.interaction.core.constant.EventState;
 import ru.practicum.ewm.interaction.core.constant.EventStateAction;
 import ru.practicum.ewm.interaction.core.constant.RequestStatus;
@@ -36,6 +29,13 @@ import ru.practicum.ewm.interaction.core.feign.FeignClientWrapper;
 import ru.practicum.ewm.interaction.core.feign.client.CommentFeignClient;
 import ru.practicum.ewm.interaction.core.feign.client.RequestFeignClient;
 import ru.practicum.ewm.interaction.core.feign.client.UserFeignClient;
+import ru.practicum.ewm.mapper.EventMapper;
+import ru.practicum.ewm.mapper.EventMapperDep;
+import ru.practicum.ewm.model.Category;
+import ru.practicum.ewm.model.Event;
+import ru.practicum.ewm.model.Location;
+import ru.practicum.ewm.repository.CategoryRepository;
+import ru.practicum.ewm.repository.EventRepository;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -284,15 +284,12 @@ public class EventService {
     }
 
     private UserDto getUserOrThrow(Long userId) throws ConditionsException {
-//        return userRepository.findById(userId)
-//                .orElseThrow(() -> new ConditionsException("Пользователь с id=" + userId + " не найден"));
-            UserDto requester = FeignClientWrapper.callWithRequest(
-                    () -> userClient.getUser(userId),
-                    userId,
-                    "Пользователь" // new ConditionsException("Пользователь с id=" + userId + " не найден"));
-            );
-            //todo разобраться с пробросом ошибки (если не найден) и подправить фигн клиент
-            return requester;
+        UserDto requester = FeignClientWrapper.callWithRequest(
+                () -> userClient.getUser(userId),
+                userId,
+                "Пользователь"
+        );
+        return requester;
     }
 
     private Category getCategoryOrThrow(Long catId) throws ConditionsException {
@@ -322,11 +319,10 @@ public class EventService {
     }
 
     private Long getConfirmedRequests(Long eventId) {
-        //return requestClient.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
         return FeignClientWrapper.call(
                 () -> requestClient.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED),
                 eventId.toString(),
-                "Событие" //NotFoundException("Пользователь с id=" + userId + " не найден");
+                "Событие"
         );
     }
 
@@ -339,7 +335,7 @@ public class EventService {
         Boolean isUserExists = FeignClientWrapper.callWithRequest(
                 () -> userClient.isExists(userId),
                 userId,
-                "Пользователь" //NotFoundException("Пользователь с id=" + userId + " не найден");
+                "Пользователь"
         );
         return isUserExists;
     }
@@ -363,9 +359,9 @@ public class EventService {
         UserDto user = FeignClientWrapper.callWithRequest(
                 () -> userClient.getUser(userId),
                 userId,
-                "Пользователь" // new ConditionsException("Пользователь с id=" + userId + " не найден"));
+                "Пользователь"
         );
-        return mapper.toDto(event,user);
+        return mapper.toDto(event, user);
     }
 
     @Transactional(readOnly = true)

@@ -24,18 +24,14 @@ public class EventsFilter implements DateRangeAware {
 
     private Boolean paid;
 
-    // --- Добавлено из AdminEventsFilter ---
     private List<Long> users;
     private List<String> states;
-    // ---------------------------------------
 
     private List<Long> categories;
 
-    //@NotNull(message = "фильтр: `Время запроса начало` обязательно к заполнению")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime rangeStart;
 
-    //@NotNull(message = "фильтр: `Время запроса окончание` обязательно к заполнению")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime rangeEnd;
 
@@ -51,7 +47,6 @@ public class EventsFilter implements DateRangeAware {
         return rangeEnd;
     }
 
-    // Утилитный метод для получения states как EventState (чтобы не дублировать в сервисе)
     public List<EventState> getStatesAsEnum() {
         if (this.states == null || this.states.isEmpty()) {
             return null;

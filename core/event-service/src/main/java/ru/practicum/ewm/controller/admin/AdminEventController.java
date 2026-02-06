@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.ewm.filter.EventsFilter;
-import ru.practicum.ewm.service.EventService;
 import ru.practicum.ewm.interaction.core.dto.event.EventFullDto;
 import ru.practicum.ewm.interaction.core.dto.event.EventUpdateDto;
 import ru.practicum.ewm.interaction.core.exception.ConditionsException;
 import ru.practicum.ewm.interaction.core.exception.ConflictException;
+import ru.practicum.ewm.service.EventService;
 
 import java.util.List;
 

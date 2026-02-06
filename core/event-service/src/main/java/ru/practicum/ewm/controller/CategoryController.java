@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.ewm.service.CategoryService;
 import ru.practicum.ewm.interaction.core.dto.category.CategoryDto;
+import ru.practicum.ewm.service.CategoryService;
 
 import java.util.List;
 

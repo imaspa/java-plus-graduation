@@ -5,19 +5,18 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
-import ru.practicum.ewm.model.Category;
-import ru.practicum.ewm.model.Event;
-import ru.practicum.ewm.model.Location;
 import ru.practicum.ewm.interaction.core.config.CommonMapperConfiguration;
 import ru.practicum.ewm.interaction.core.constant.EventState;
 import ru.practicum.ewm.interaction.core.dto.event.EventFullDto;
 import ru.practicum.ewm.interaction.core.dto.event.EventNewDto;
 import ru.practicum.ewm.interaction.core.dto.event.EventUpdateDto;
 import ru.practicum.ewm.interaction.core.dto.user.UserDto;
+import ru.practicum.ewm.model.Category;
+import ru.practicum.ewm.model.Event;
+import ru.practicum.ewm.model.Location;
 
 @Mapper(config = CommonMapperConfiguration.class)
 public interface EventMapper {
-    //    @Mapping(target = "events", ignore = true)
     EventFullDto toDto(Event source);
 
     @BeanMapping(ignoreByDefault = true)
@@ -47,9 +46,6 @@ public interface EventMapper {
     @Mapping(target = "state", source = "state")
     @Mapping(target = "title", source = "dto.title")
     Event toEntityWithUpdateDto(@MappingTarget Event event, EventUpdateDto dto, Category category, Location location, EventState state);
-
-
-    //@BeanMapping(ignoreByDefault = true)
 
     @Mapping(target = "id", source = "event.id")
     @Mapping(target = "initiator", source = "user")

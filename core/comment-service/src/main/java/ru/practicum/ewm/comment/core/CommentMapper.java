@@ -14,8 +14,6 @@ import ru.practicum.ewm.interaction.core.dto.comment.CommentUpdateDto;
 @Mapper(config = CommonMapperConfiguration.class)
 public interface CommentMapper {
 
-//    @Mapping(target = "authorName", source = "author.name")
-//    @Mapping(target = "event", source = "event.id")
     CommentDto toDto(Comment entity);
 
     @BeanMapping(ignoreByDefault = true, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

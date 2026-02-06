@@ -46,8 +46,6 @@ public class Event {
     @Column(nullable = false, length = 7000)
     private String description;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "initiator_id", nullable = false)
     private Long initiatorId;
 
     @Column(name = "event_date")

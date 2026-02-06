@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.ewm.filter.EventsFilter;
-import ru.practicum.ewm.service.EventService;
 import ru.practicum.ewm.interaction.core.dto.event.EventFullDto;
 import ru.practicum.ewm.interaction.core.dto.event.EventShortDto;
+import ru.practicum.ewm.service.EventService;
 
 import java.util.List;
 

@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.ewm.interaction.core.dto.event.EventLocationDto;
 import ru.practicum.ewm.mapper.LocationMapper;
 import ru.practicum.ewm.model.Location;
 import ru.practicum.ewm.repository.LocationRepository;
-import ru.practicum.ewm.interaction.core.dto.event.EventLocationDto;
 
 
 @Slf4j

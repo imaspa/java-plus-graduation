@@ -3,8 +3,8 @@ package ru.practicum.ewm.service;
 import com.querydsl.core.BooleanBuilder;
 import org.springframework.util.StringUtils;
 import ru.practicum.ewm.filter.EventsFilter;
-import ru.practicum.ewm.model.QEvent;
 import ru.practicum.ewm.interaction.core.constant.EventState;
+import ru.practicum.ewm.model.QEvent;
 
 import java.time.LocalDateTime;
 
@@ -47,10 +47,6 @@ public class EventPredicateBuilder {
             predicate.and(event.participantLimit.eq(0L)
                     .or(event.participantLimit.gt(10L)));
         }
-
-//        if (forAdmin && filter.getUsers() != null && !filter.getUsers().isEmpty()) {
-//            predicate.and(event.initiator.id.in(filter.getUsers()));
-//        }
 
         if (forAdmin && filter.getStates() != null && !filter.getStates().isEmpty()) {
             var states = filter.getStatesAsEnum();
