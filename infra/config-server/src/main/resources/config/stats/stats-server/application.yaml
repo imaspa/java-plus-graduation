@@ -1,5 +1,5 @@
 server:
-  port: 0
+  port: 9090
 
 spring:
   mvc:
@@ -19,9 +19,10 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: jdbc:postgresql://localhost:5435/stats
+    username: ${SPRING_DATASOURCE_USERNAME:admin}
+    password: ${SPRING_DATASOURCE_PASSWORD:100}
+
   jpa:
     hibernate:
       ddl-auto: none
