@@ -14,7 +14,7 @@ public class EventMapperDep {
 
     private final LocationMapper locationMapper = new LocationMapperImpl();
 
-    public EventFullDto eventToFullDto(Event event, Long confirmedRequests, Long views, List<CommentDto> comments) {
+    public EventFullDto eventToFullDto(Event event, Long confirmedRequests, List<CommentDto> comments) {
         return EventFullDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())
@@ -30,12 +30,11 @@ public class EventMapperDep {
                 .requestModeration(event.getRequestModeration())
                 .state(event.getState())
                 .title(event.getTitle())
-                .views(views)
                 .comments(comments)
                 .build();
     }
 
-    public EventShortDto eventToShortDto(Event event, Long confirmedRequests, Long views) {
+    public EventShortDto eventToShortDto(Event event, Long confirmedRequests) {
         return EventShortDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())
@@ -44,8 +43,9 @@ public class EventMapperDep {
                 .eventDate(event.getEventDate())
                 .paid(event.getPaid())
                 .title(event.getTitle())
-                .views(views)
+//                .views(views)
                 .build();
     }
+
 
 }

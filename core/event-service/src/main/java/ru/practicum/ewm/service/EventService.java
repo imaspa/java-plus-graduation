@@ -12,6 +12,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import ru.practicum.ewm.client.AnalyzerClient;
+import ru.practicum.ewm.client.CollectorClient;
 import ru.practicum.ewm.filter.EventsFilter;
 import ru.practicum.ewm.interaction.core.constant.EventState;
 import ru.practicum.ewm.interaction.core.constant.EventStateAction;
@@ -36,12 +38,17 @@ import ru.practicum.ewm.model.Event;
 import ru.practicum.ewm.model.Location;
 import ru.practicum.ewm.repository.CategoryRepository;
 import ru.practicum.ewm.repository.EventRepository;
+import ru.practicum.grpc.stats.action.ActionTypeProto;
+import ru.practicum.grpc.stats.eventPredictions.RecommendedEventProto;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -60,7 +67,9 @@ public class EventService {
 
     private final LocationService locationService;
     private final CategoryRepository categoryRepository;
-    private final StatsService statsService;
+//    private final StatsService statsService;
+    private final CollectorClient collectorClient;
+    private final AnalyzerClient analyzerClient;
 
     @Transactional
     public EventFullDto create(@Valid EventNewDto dto, Long userId) throws ConditionsException {
@@ -100,10 +109,12 @@ public class EventService {
         log.info("Обновлено событие с id = {}", eventId);
 
         Long calcConfirmedRequests = getConfirmedRequests(eventId);
-        Long calcView = statsService.getViewsForEvent(eventId);
+
+        //Long calcView = statsService.getViewsForEvent(eventId);
+
         return mapper.toDto(event).toBuilder()
                 .confirmedRequests(calcConfirmedRequests)
-                .views(calcView)
+//                .views(calcView)
                 .comments(getComments(eventId))
                 .build();
     }
@@ -149,13 +160,10 @@ public class EventService {
         log.info("Администратор обновил событие с id = {}", eventId);
 
         Long calcConfirmedRequests = getConfirmedRequests(eventId);
-        Long calcView = statsService.getViewsForEvent(eventId);
         return mapper.toDto(event).toBuilder()
                 .confirmedRequests(calcConfirmedRequests)
-                .views(calcView)
                 .comments(getComments(eventId))
                 .build();
-
     }
 
     @Transactional(readOnly = true)
@@ -165,33 +173,22 @@ public class EventService {
         }
         Event event = getEventOrThrow(eventId, userId);
         Long calcConfirmedRequests = getConfirmedRequests(eventId);
-        Long calcView = statsService.getViewsForEvent(eventId);
         log.info("Получено событие {} пользователя {}", eventId, userId);
         return mapper.toDto(event).toBuilder()
                 .confirmedRequests(calcConfirmedRequests)
-                .views(calcView)
                 .comments(getComments(eventId))
                 .build();
-
     }
 
     @Transactional(readOnly = true)
-    public EventFullDto findPublicEventById(Long eventId, HttpServletRequest request) {
+    public EventFullDto findPublicEventById(Long eventId, Long userId) {
         Event event = getEventOrThrow(eventId, EventState.PUBLISHED);
         Long calcConfirmedRequests = getConfirmedRequests(eventId);
-        Long calcView = statsService.getViewsForEvent(eventId);
-
-        statsService.saveHit(
-                "main-service",
-                request.getRequestURI(),
-                request.getRemoteAddr(),
-                LocalDateTime.now()
-        );
+        collectorClient.collectUserAction(userId, eventId, ActionTypeProto.ACTION_VIEW.toString(), Instant.now());
 
         log.info("Получено публичное событие {}", eventId);
         return mapper.toDto(event).toBuilder()
                 .confirmedRequests(calcConfirmedRequests)
-                .views(calcView)
                 .comments(getComments(eventId))
                 .build();
     }
@@ -201,33 +198,24 @@ public class EventService {
         if (!userIsExist(userId)) {
             throw new NotFoundException("Пользователь не найден");
         }
-
         return repository.findAllByInitiatorId(userId, pageable)
                 .stream()
                 .map(event -> EventMapperDep.eventToShortDto(
                         event,
-                        getConfirmedRequests(event.getId()),
-                        statsService.getViewsForEvent(event.getId())
+                        getConfirmedRequests(event.getId()
+                        )
                 ))
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public List<EventShortDto> findPublicEventsWithFilter(@Valid EventsFilter filter, Pageable pageable, HttpServletRequest request) {
-        statsService.saveHit(
-                "main-service",
-                request.getRequestURI(),
-                request.getRemoteAddr(),
-                LocalDateTime.now()
-        );
         return findEventsWithFilterInternal(
                 filter,
                 pageable,
                 false,
                 (event, viewsMap) -> {
-                    String uri = "/events/" + event.getId();
-                    Long views = viewsMap.getOrDefault(uri, 0L);
-                    return EventMapperDep.eventToShortDto(event, getConfirmedRequests(event.getId()), views);
+                    return EventMapperDep.eventToShortDto(event, getConfirmedRequests(event.getId()));
                 }
         );
     }
@@ -239,9 +227,7 @@ public class EventService {
                 pageable,
                 true,
                 (event, viewsMap) -> {
-                    String uri = "/events/" + event.getId();
-                    Long views = viewsMap.getOrDefault(uri, 0L);
-                    return EventMapperDep.eventToFullDto(event, getConfirmedRequests(event.getId()), views,
+                    return EventMapperDep.eventToFullDto(event, getConfirmedRequests(event.getId()),
                             getComments(event.getId()));
                 }
         );
@@ -269,18 +255,20 @@ public class EventService {
             return Collections.emptyList();
         }
 
-        List<String> uris = eventsPage.stream()
-                .map(e -> "/events/" + e.getId())
-                .toList();
-
-        Map<String, Long> viewsUriMap = statsService.getViewsForUris(uris);
+//        List<String> uris = eventsPage.stream()
+//                .map(e -> "/events/" + e.getId())
+//                .toList();
+//
+//
+//        Map<String, Long> viewsUriMap = statsService.getViewsForUris(uris);
         Stream<Event> eventStream = eventsPage.stream();
         List<T> result = eventStream
-                .map(e -> mapper.apply(e, viewsUriMap))
+                .map(e -> mapper.apply(e,Map.of()))
                 .toList();
 
         log.info("Найдено {} событий в режиме {}", result.size(), forAdmin ? "ADMIN" : "PUBLIC");
         return result;
+
     }
 
     private UserDto getUserOrThrow(Long userId) throws ConditionsException {
@@ -373,4 +361,36 @@ public class EventService {
     public void delete(Long eventId) {
         repository.deleteById(eventId);
     }
+
+
+    public List<EventShortDto> getRecommendations(Long max, Long userId) {
+        Map<Long, Double> recommendations = analyzerClient.getRecommendationsForUser(userId, max)
+                .collect(Collectors.toMap(RecommendedEventProto::getEventId, RecommendedEventProto::getScore));
+
+        if (recommendations.isEmpty()) {
+            return List.of();
+        }
+
+        List<EventShortDto> result = repository.findAllById(recommendations.keySet()).stream()
+                .filter(event -> event.getState() == EventState.PUBLISHED)
+                .map(event -> {
+                    EventShortDto dto = mapper.toEventShortDto(event);
+                    dto.setRating(recommendations.get(event.getId()));
+                    return dto;
+                })
+                .sorted(Comparator.comparingDouble(EventShortDto::getRating).reversed())
+                .limit(max)
+                .toList();
+        return result;
+    }
+
+    public void addLike(Long eventId, Long userId) {
+        Event event = getEventOrThrow(eventId);
+        if (requestClient.checkUserParticipation(userId, eventId)) {
+            collectorClient.collectUserAction(userId, eventId, ActionTypeProto.ACTION_LIKE.toString(), Instant.now());
+        } else {
+            throw new NotFoundException("Пользователь: %s не регистрировался на событие: %s".formatted(userId, eventId));
+        }
+    }
+
 }
