@@ -24,7 +24,7 @@ import java.util.Map;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class SimilarityProcessor{
+public class SimilarityProcessor {
     private final SimilarityService service;
     private final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
 

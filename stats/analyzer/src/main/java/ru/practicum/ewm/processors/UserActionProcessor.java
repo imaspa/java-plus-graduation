@@ -52,6 +52,7 @@ public class UserActionProcessor implements Runnable {
                 }
             }
         } catch (WakeupException e) {
+            log.error("[Analyzer UserAction] [PROCESSING ERROR]", e);
         } catch (Exception e) {
             log.error("[Analyzer UserAction] [PROCESSING ERROR]", e);
         } finally {

@@ -24,7 +24,7 @@ public class AnalyzerStarter implements ApplicationRunner {
     );
 
     @Override
-    public void run(org.springframework.boot.ApplicationArguments args){
+    public void run(org.springframework.boot.ApplicationArguments args) {
         log.info("[Analyzer userAction] Starting in background...");
         executor.execute(userAction);
 
