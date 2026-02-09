@@ -38,7 +38,6 @@ public class AggregatorService {
 
     private final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
 
-    //SpecificRecordBase
     private final KafkaConsumer<String, UserActionAvro> consumer;
     private final KafkaProducer<String, EventSimilarityAvro> producer;
 

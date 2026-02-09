@@ -43,7 +43,6 @@ public class EventMapperDep {
                 .eventDate(event.getEventDate())
                 .paid(event.getPaid())
                 .title(event.getTitle())
-//                .views(views)
                 .build();
     }
 

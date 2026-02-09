@@ -67,7 +67,7 @@ public class EventService {
 
     private final LocationService locationService;
     private final CategoryRepository categoryRepository;
-//    private final StatsService statsService;
+
     private final CollectorClient collectorClient;
     private final AnalyzerClient analyzerClient;
 
@@ -109,12 +109,8 @@ public class EventService {
         log.info("Обновлено событие с id = {}", eventId);
 
         Long calcConfirmedRequests = getConfirmedRequests(eventId);
-
-        //Long calcView = statsService.getViewsForEvent(eventId);
-
         return mapper.toDto(event).toBuilder()
                 .confirmedRequests(calcConfirmedRequests)
-//                .views(calcView)
                 .comments(getComments(eventId))
                 .build();
     }
@@ -255,12 +251,6 @@ public class EventService {
             return Collections.emptyList();
         }
 
-//        List<String> uris = eventsPage.stream()
-//                .map(e -> "/events/" + e.getId())
-//                .toList();
-//
-//
-//        Map<String, Long> viewsUriMap = statsService.getViewsForUris(uris);
         Stream<Event> eventStream = eventsPage.stream();
         List<T> result = eventStream
                 .map(e -> mapper.apply(e,Map.of()))
@@ -371,8 +361,7 @@ public class EventService {
             return List.of();
         }
 
-        List<EventShortDto> result = repository.findAllById(recommendations.keySet()).stream()
-                .filter(event -> event.getState() == EventState.PUBLISHED)
+        List<EventShortDto> result = repository.findByIdInAndStateIs(recommendations.keySet(), EventState.PUBLISHED).stream()
                 .map(event -> {
                     EventShortDto dto = mapper.toEventShortDto(event);
                     dto.setRating(recommendations.get(event.getId()));

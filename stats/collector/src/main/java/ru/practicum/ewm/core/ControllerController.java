@@ -23,12 +23,16 @@ public class ControllerController extends UserActionControllerGrpc.UserActionCon
             service.createUserAction(request);
             response.onNext(Empty.getDefaultInstance());
             response.onCompleted();
+        } catch (IllegalArgumentException e) {
+            log.error("бизнес ошибка:", e);
+            response.onError(Status.INVALID_ARGUMENT
+                    .withDescription(e.getMessage())
+                    .asRuntimeException());
         } catch (Exception e) {
-            response.onError(new StatusRuntimeException(
-                    Status.INTERNAL
-                            .withDescription(e.getLocalizedMessage())
-                            .withCause(e)
-            ));
+            log.error("Ошибка при обработке действия", e);
+            response.onError(Status.INTERNAL
+                    .withDescription(e.getMessage())
+                    .asRuntimeException());
         }
     }
 }
