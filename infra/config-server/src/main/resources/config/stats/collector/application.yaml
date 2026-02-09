@@ -1,0 +1,37 @@
+grpc:
+  server:
+    port: 0
+
+server:
+  port: 0
+
+
+collector:
+  kafka:
+    bootstrap-servers: "localhost:9092"
+    producer:
+      properties:
+        "key.serializer": "org.apache.kafka.common.serialization.StringSerializer"
+        "value.serializer": "ru.practicum.ewm.kafka.serializers.GeneralAvroSerializer"
+        #        acks: "all"
+        #        retries: 3
+        #        "linger.ms": 5
+        #        "request.timeout.ms": 30000
+        #        "delivery.timeout.ms": 120000
+        "bootstrap.servers": ${collector.kafka.bootstrap-servers}
+      topic: "stats.user-actions.v1"
+
+
+
+logging:
+  level:
+    ru.yandex.practicum: DEBUG
+    org.springframework.cloud.netflix.eureka: INFO
+    apache.kafka: WARN
+    io.grpc: INFO
+
+management:
+  endpoints.web.exposure.include: health,info
+
+
+

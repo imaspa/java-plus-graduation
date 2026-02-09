@@ -1,0 +1,73 @@
+grpc:
+  server:
+    port: 0
+
+server:
+  port: 0
+
+spring:
+  mvc:
+    format:
+      date: yyyy-MM-dd
+      date-time: yyyy-MM-dd HH:mm:ss
+      time: HH:mm:ss
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Europe/Moscow
+    locale: ru_RU
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5433/stats
+    username: ${SPRING_DATASOURCE_USERNAME:admin}
+    password: ${SPRING_DATASOURCE_PASSWORD:100}
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+
+analyzer:
+  kafka:
+    common-properties:
+      "bootstrap.servers": localhost:9092
+      "key.deserializer": "org.apache.kafka.common.serialization.StringDeserializer"
+      "enable.auto.commit": false
+    consumers:
+      - type: SimilarityProcessor
+        properties:
+          "value.deserializer": "ru.practicum.ewm.kafka.deserializers.SimilarityAvroDeserializer"
+          "group.id": "analyzer-similarity-group"
+          "enable.auto.commit": false
+          "auto.commit.interval.ms": 0
+          "auto.offset.reset": "earliest"
+          "max.poll.records": 100
+          "fetch.min.bytes": 1
+          "fetch.max.wait.ms": 500
+          "session.timeout.ms": 30000
+          "heartbeat.interval.ms": 10000
+        topics:
+          - "stats.events-similarity.v1"
+        poll-timeout: 500ms
+
+      - type: UserActionProcessor
+        properties:
+          "value.deserializer": "ru.practicum.ewm.kafka.deserializers.UserActionAvroDeserializer"
+          "group.id": "analyzer-similarity-group"
+          "enable.auto.commit": false
+          "auto.commit.interval.ms": 0
+          "auto.offset.reset": "earliest"
+          "max.poll.records": 100
+          "fetch.min.bytes": 1
+          "fetch.max.wait.ms": 500
+          "session.timeout.ms": 30000
+          "heartbeat.interval.ms": 10000
+        topics:
+          - "stats.user-actions.v1"
+        poll-timeout: 2000ms

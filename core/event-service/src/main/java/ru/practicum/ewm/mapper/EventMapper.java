@@ -9,6 +9,7 @@ import ru.practicum.ewm.interaction.core.config.CommonMapperConfiguration;
 import ru.practicum.ewm.interaction.core.constant.EventState;
 import ru.practicum.ewm.interaction.core.dto.event.EventFullDto;
 import ru.practicum.ewm.interaction.core.dto.event.EventNewDto;
+import ru.practicum.ewm.interaction.core.dto.event.EventShortDto;
 import ru.practicum.ewm.interaction.core.dto.event.EventUpdateDto;
 import ru.practicum.ewm.interaction.core.dto.user.UserDto;
 import ru.practicum.ewm.model.Category;
@@ -18,6 +19,8 @@ import ru.practicum.ewm.model.Location;
 @Mapper(config = CommonMapperConfiguration.class)
 public interface EventMapper {
     EventFullDto toDto(Event source);
+
+    EventShortDto toEventShortDto(Event source);
 
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "annotation", source = "dto.annotation")
